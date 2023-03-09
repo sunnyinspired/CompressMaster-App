@@ -1,27 +1,42 @@
 import PySimpleGUI as App
-from modules.zipCreator import makeArchive
+from modules.zipCreator import makeArchive, ExtractFile
 
-label1 = App.Text("Select Files: ")
-input1 = App.InputText()
-choose_files = App.FilesBrowse("Select", key="files")
-label2 = App.Text("Select Folder: ")
-input2 = App.InputText()
-select_folder = App.FolderBrowse("Select", key="folder")
-compress_button = App.Button("Compress")
-output = App.Text(key="output")
+compress_column = [
+    [App.Text("Select Files: "), App.InputText(), App.FilesBrowse("Select", key="files")],
+    [App.Text("Select Folder: "), App.InputText(), App.FolderBrowse("Select", key="folder")],
+    [App.Button("Compress", key="Compress"), App.Text(key="output")]
+]
 
+extract_column = [
+    [App.Text("Select Zip File: "), App.InputText(), App.FileBrowse("Select", key="zip_file")],
+    [App.Text("Select Folder: "), App.InputText(), App.FolderBrowse("Select", key="zip_folder")],
+    [App.Button("Extract", key="Extract"), App.Text(key="output2")]
+]
 # list of layouts
-layouts = [[label1, input1, choose_files], [label2, input2, select_folder], [compress_button, output]]
+layouts = [
+    [App.Text("COMPRESS FILES:", font=14)],
+    [compress_column],
+    [App.Text("")],
+    [App.HSeparator()],
+    [App.Text("")],
+    [App.Text("EXTRACT FILE:", font=14)],
+    [extract_column]
+]
 
 window = App.Window("CompressMaster", layout=layouts)
 while True:
     event, values = window.read()
-    file_paths = values["files"].split(";")
-    folder_path = values["folder"]
-    makeArchive(file_paths, folder_path)
-    window['output'].update(value="Successfully Compresses!")
     if event == App.WIN_CLOSED:
         break
-
+    elif event == "Compress":
+        file_paths = values["files"].split(";")
+        folder_path = values["folder"]
+        makeArchive(file_paths, folder_path)
+        window['output'].update(value="Successfully Compressed!")
+    elif event == "Extract":
+        zip_file_path = values["zip_file"]
+        zip_folder_path = values["zip_folder"]
+        ExtractFile(zip_file_path, zip_folder_path)
+        window['output2'].update(value="File successfully Extracted!")
 
 window.close()
