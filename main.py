@@ -1,15 +1,16 @@
+import os
 import PySimpleGUI as App
 from modules.zipCreator import makeArchive, ExtractFile
 
 compress_column = [
     [App.Text("Select Files: "), App.InputText(), App.FilesBrowse("Select", key="files")],
-    [App.Text("Select Folder: "), App.InputText(), App.FolderBrowse("Select", key="folder")],
+    # [App.Text("Select Folder: "), App.InputText(), App.FolderBrowse("Select", key="folder")],
     [App.Button("Compress", key="Compress"), App.Text(key="output")]
 ]
 
 extract_column = [
     [App.Text("Select Zip File: "), App.InputText(), App.FileBrowse("Select", key="zip_file")],
-    [App.Text("Select Folder: "), App.InputText(), App.FolderBrowse("Select", key="zip_folder")],
+    # [App.Text("Select Folder: "), App.InputText(), App.FolderBrowse("Select", key="zip_folder")],
     [App.Button("Extract", key="Extract"), App.Text(key="output2")]
 ]
 # list of layouts
@@ -30,12 +31,12 @@ while True:
         break
     elif event == "Compress":
         file_paths = values["files"].split(";")
-        folder_path = values["folder"]
+        folder_path = os.path.dirname(file_paths[0])
         makeArchive(file_paths, folder_path)
         window['output'].update(value="Successfully Compressed!")
     elif event == "Extract":
         zip_file_path = values["zip_file"]
-        zip_folder_path = values["zip_folder"]
+        zip_folder_path = os.path.dirname(zip_file_path)
         ExtractFile(zip_file_path, zip_folder_path)
         window['output2'].update(value="File successfully Extracted!")
 
